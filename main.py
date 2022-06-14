@@ -5,6 +5,7 @@ import time
 width,height = 1280,780
 screen = pygame.display.set_mode((width,height))
 pygame.display.set_caption('Invaders Based Game')
+pygame.display.set_icon(pygame.image.load('assets/graphics/pygameicon.png'))
 #loading all the images
 #Player Ship
 playerShip = pygame.image.load('assets/graphics/PNG/Spaceships/05/Spaceship_05_BLUE.png')
@@ -27,6 +28,5 @@ def main():
     clock = pygame.time.Clock()
     while run:
         clock.tick(FPS)
-main()
-display.flip()
-quit()
+#pygame.display.flip()
+#quit()
