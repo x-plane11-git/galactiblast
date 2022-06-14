@@ -12,14 +12,14 @@ playerShip = pygame.image.load('assets/graphics/PNG/Spaceships/05/Spaceship_05_B
 EnemyShip1 = pygame.image.load('assets/graphics/PNG/Spaceships/01/Spaceship_01_RED.png')
 EnemyShip2 = pygame.image.load('assets/graphics/PNG/Spaceships/01/Spaceship_01_RED.png')
 EnemyShip3 = pygame.image.load('assets/graphics/PNG/Spaceships/01/Spaceship_01_RED.png')
-EnemyShip4 = pygame.image.load('assets/graphics/PNG/Spaceships/001/Spaceship_01_RED.png')
+EnemyShip4 = pygame.image.load('assets/graphics/PNG/Spaceships/01/Spaceship_01_RED.png')
 #Lasers
 redLaser = pygame.image.load('assets/graphics/PNG/redLaser.png')
 blueLaser = pygame.image.load('assets/graphics/PNG/blueLaser.png')
 
 #Background
-pygame.screen.fill(0)
-
+bg = pygame.image.load('assets/graphics/PNG/Space Background.png').convert_alpha()
+screen.blit(bg,(0,0))
 #Functions
 def main():
     run = True
@@ -27,3 +27,6 @@ def main():
     clock = pygame.time.Clock()
     while run:
         clock.tick(FPS)
+main()
+display.flip()
+quit()
