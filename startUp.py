@@ -92,54 +92,6 @@ running=True
 ####        page = story() 
 button=""
 ##myClock=time.Clock()
-def start():
-   while running:
-      for evt in event.get():
-         if evt.type==QUIT:
-               running=False
-                        
-      mx,my=mouse.get_pos()
-      mb=mouse.get_pressed()
-      
-      screen.blit(bgPic,(0,0))
-      draw.rect(screen,BLACK,buttonRect1,0,10)
-      draw.rect(screen,BLACK,buttonRect2,0,10)
-      draw.rect(screen,BLACK,buttonRect3,0,10)
-      draw.rect(screen,BLACK,buttonRect4,0,10)
-      draw.rect(screen,WHITE,startRect,10,10)
-      draw.rect(screen,WHITE,charRect,10,10)
-      draw.rect(screen,WHITE,rulesRect,10,10)
-      draw.rect(screen,WHITE,storyRect,10,10)
-      draw.rect(screen,WHITE,settingsRect,0,10)
-      draw.rect(screen,WHITE,musicRect,0,10)
-      draw.rect(screen,BLACK,borderRect,10,0)
-      screen.blit(settings,(1200,25))
-      screen.blit(volumePic,(1130,25))
-      screen.blit(gameLogo,(35,-350))
-      screen.blit(font.render("Start Game",True,WHITE),(560,385))
-      screen.blit(font.render("Select Spaceship",True,WHITE),(525,465))
-      screen.blit(font.render("Instructions",True,WHITE),(560,545))
-      screen.blit(font.render("Story",True,WHITE),(610,625))
-      screen.blit(font1.render("©Developed by: Mahir & Taksh",True,WHITE),(1060,685))
-
-      if mb[0]:
-         if startRect.collidepoint(mx,my):
-            button="Start Game"
-         if charRect.collidepoint(mx,my):
-            button="Character Select"
-         if rulesRect.collidepoint(mx,my):
-            button="Instructions"
-         if storyRect.collidepoint(mx,my):
-            button="Story"
-         if settingsRect.collidepoint(mx,my):
-            button="Settings"
-         if musicRect.collidepoint(mx,my):
-            button="Music"
-      print(button)
-
-      
-      
-      display.flip()
 ##    myClock.tick(60)
             
 quit()
