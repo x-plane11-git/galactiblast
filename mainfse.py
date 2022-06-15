@@ -52,21 +52,55 @@ redLaser = image.load('assets/graphics/PNG/redLaser.png')
 blueLaser = image.load('assets/graphics/PNG/blueLaser.png')
 #Background
 bg = image.load('assets/graphics/PNG/Space Background.png').convert_alpha()
-#sprite rect assign
-playerRect = Rect(30, 30, 358,276)
+storybg = image.load('pics/storyPic.jpg').convert_alpha()
 def sound():
         pass
 def settings():
         pass
-def mainGame():
+def story():
         run = True
+        screen.blit(storybg,(0,0))
+        while run:
+                for evt in event.get():
+                        if evt.type==QUIT:
+                                run=False
+                        keys = pygame.key.get_pressed() #check what keys are pressed
+                        if keys[K_ESCAPE] or keys[K_BACKSPACE]: #return to menu
+                            return 'menu'
+                screen.blit(font1.render("Press esc to return to menu",False,WHITE),(1000,685))
+                            
+                display.flip()
+def mainGame():
+        #sprite rect assign
+        px = 600
+        py = 600
+        psize = 40
+        xMove = 0
+        yMove = 0
+        run = True
+        speed = 0.1
         screen.blit(bg,(0,0))
         while run:
+                screen.blit(bg,(0,0))
                 print("aaa")
+                player = draw.rect(screen,RED,[px, py, psize, psize])
                 for evt in event.get():
-                    if evt.type==QUIT:
-                        run=False
-                draw.rect(screen,RED,playerRect)
+                        if evt.type==QUIT:
+                                return 'menu'
+                        keys = pygame.key.get_pressed() #check what keys are pressed
+                if keys[pygame.K_UP] and player.y - speed > 0: #moving player up
+                        player.y -= speed
+                if keys[pygame.K_LEFT] and player.x - speed > 0: #moving player left
+                        player.x -= speed
+                if keys[pygame.K_RIGHT] and player.x + speed +player.getw() < width: #moving player right
+                        player.x += speed
+                if keys[pygame.K_DOWN] and player.y + speed + player.geth() < height: #moving player down
+                        player.y += speed
+                keys = key.get_pressed()
+                mx,my=mouse.get_pos()
+                mb=mouse.get_pressed()
+                px = px + xMove
+                py = py + yMove
                 display.flip()
 def start():
     run = True
@@ -108,7 +142,7 @@ def start():
             if rulesRect.collidepoint(mx,my):
                 button="Instructions"
             if storyRect.collidepoint(mx,my):
-                button="Story"
+                return 'story'
             if settingsRect.collidepoint(mx,my):
                 button="Settings"
             if musicRect.collidepoint(mx,my):
@@ -117,9 +151,11 @@ def start():
     return "exit"
 page = "menu"
 while page != "exit":
-    if page == "menu":
-        page = start()
-    if page == "lev1":
-        page = mainGame()
+        if page == "menu":
+                page = start()
+        if page == "lev1":
+                page = mainGame()
+        if page == 'story':
+                page = story()
   
 quit()
