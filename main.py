@@ -1,4 +1,5 @@
 import pygame
+from startUp import*
 import random
 import time 
 from functionsClasses import Vehicle, Player, Enemy, Bullets #Imports the vehicle and player class from the ship file in the main.py directory
@@ -98,4 +99,4 @@ def mainGame(): #Main game function to seperate game from menu etc.
                 enemies.remove(enemy)
         player.moveLasers(laserSpeed, enemies)
 
-mainGame() #runs main game function (soon to be replaced with startscreen
+start() #runs main game function (soon to be replaced with startscreen
