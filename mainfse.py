@@ -44,12 +44,20 @@ font1=pygame.font.SysFont("tahoma",20)
 playerVehicle = image.load('assets/graphics/PNG/Spaceships/05/Spaceship_05_BLUE.png')
 #Enemy Ship
 EnemyShip1 = pygame.image.load('assets/graphics/PNG/Spaceships/01/Spaceship_01_RED.png')
+enemyX = random.randint(5,1200)
+enemyY = random.randint(50,150)
+enemyYchange = 0
 EnemyShip2 = pygame.image.load('assets/graphics/PNG/Spaceships/01/Spaceship_01_RED.png')
 EnemyShip3 = pygame.image.load('assets/graphics/PNG/Spaceships/01/Spaceship_01_RED.png')
 EnemyShip4 = pygame.image.load('assets/graphics/PNG/Spaceships/01/Spaceship_01_RED.png')
 #Lasers
 redLaser = image.load('assets/graphics/PNG/redLaser.png')
 blueLaser = image.load('assets/graphics/PNG/blueLaser.png')
+bullx = 0
+bully = 595
+bullxChange = 0
+bullyChange = 0.7
+bullState = 'ready'
 #Background
 bg = image.load('assets/graphics/PNG/Space Background.png').convert_alpha()
 storybg = image.load('pics/storyPic.jpg').convert_alpha()
@@ -70,42 +78,67 @@ def story():
                 screen.blit(font1.render("Press esc to return to menu",False,WHITE),(1000,685))
                             
                 display.flip()
+px = 600
+py = 600
+def enemy(x,y):
+        screen.blit(EnemyShip1, (x,y))
+def fireBullet(x,y):
+        global bullState
+        global px
+        global py
+        bullState = 'fire'
+        screen.blit(blueLaser,(px+20,y))
 def mainGame():
         #sprite rect assign
-        px = 600
-        py = 600
+        fpsClock = pygame.time.Clock()
+        targets=[]
+        bullets=[]
+        cooldown = 20
+        global px
+        global py
+        global bullx
+        global bully
+        global bullState
         psize = 40
         xMove = 0
         yMove = 0
         run = True
-        speed = 0.1
+        speed = 0.5
         screen.blit(bg,(0,0))
+        if cooldown<20:
+                cooldown+=1
         while run:
                 screen.blit(bg,(0,0))
-                print("aaa")
-                player = draw.rect(screen,RED,[px, py, psize, psize])
-                for evt in event.get():
-                        if evt.type==QUIT:
-                                return 'menu'
-                        keys = pygame.key.get_pressed() #check what keys are pressed
-                if keys[pygame.K_UP] and player.y - speed > 0: #moving player up
-                        player.y -= speed
-                if keys[pygame.K_LEFT] and player.x - speed > 0: #moving player left
-                        player.x -= speed
-                if keys[pygame.K_RIGHT] and player.x + speed +player.getw() < width: #moving player right
-                        player.x += speed
-                if keys[pygame.K_DOWN] and player.y + speed + player.geth() < height: #moving player down
-                        player.y += speed
                 keys = key.get_pressed()
                 mx,my=mouse.get_pos()
                 mb=mouse.get_pressed()
+                for evt in event.get():
+                        if evt.type==QUIT:
+                                return 'menu'
+                keys = pygame.key.get_pressed() #check what keys are pressed
+                if keys[pygame.K_LEFT]: #and px - speed > 0: #moving player left
+                        px -= speed
+                if keys[pygame.K_RIGHT]: # and px + speed: #moving player right
+                        px += speed
+                if keys[pygame.K_SPACE]:
+                        bullx = px
+                        fireBullet(bullx, bully)
+                player = draw.rect(screen,RED,[px, py, psize, psize])
+                enemy(enemyX, enemyY)
                 px = px + xMove
                 py = py + yMove
+                #bullets
+                if bully <= 0:
+                        bully = 595
+                        bullState = 'ready'
+                if bullState == 'fire':
+                        fireBullet(bullx, bully)
+                        bully -= bullyChange
                 display.flip()
+        fpsClock.tick(60)
 def start():
     run = True
     while run:
-        print("bbb")
         for evt in event.get():
             if evt.type==QUIT:
                 run=False
