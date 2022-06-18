@@ -60,6 +60,9 @@ font3 = pygame.font.SysFont("tahoma", 150)
 mixer.music.load('pics/bgm.wav')
 mixer.music.play(-1)
 # GAME IMAGE LOADING
+#level pass
+level1pic = image.load('pics/level1.jpg')
+level2pic = image.load('pics/level2.jpg')
 # Player Ship
 blueShip = image.load(
     'assets/graphics/PNG/Spaceships/05/Spaceship_05_BLUE.png')
@@ -183,8 +186,8 @@ def story():
 px = 600
 py = 600
 
-def settings():
-    
+def settingsfn():
+    pass
 def enemy(x, y, i):
     screen.blit(EnemyShip1[i], (x-50, y-20))
 
@@ -253,7 +256,38 @@ def selectShip():
         screen.blit(greenShip,(860,380))
         display.flip()
 
+def win1():
+    win = mixer.Sound('pics/wave.wav')
+    win.play()
+    run = True
+    while run:
+        screen.blit(level1pic, (0, 0))
+        mx, my = mouse.get_pos()
+        mb = mouse.get_pressed()
+        for evt in event.get():
+            if evt.type == QUIT:
+                    return 'menu'
+            keys = key.get_pressed()  # check what keys are pressed
+            if keys[K_RETURN]:  # and px - speed > 0: #moving player left
+                return 'lev2'
 
+        display.flip()
+def win2():
+    win = mixer.Sound('pics/wave.wav')
+    win.play()
+    run = True
+    while run:
+        screen.blit(level2pic, (0, 0))
+        mx, my = mouse.get_pos()
+        mb = mouse.get_pressed()
+        for evt in event.get():
+            if evt.type == QUIT:
+                    return 'menu'
+            keys = key.get_pressed()  # check what keys are pressed
+            if keys[K_RETURN]:  # and px - speed > 0: #moving player left
+                return 'menu'
+
+        display.flip()
 def lev1():
     # sprite rect assign
     fpsClock = pygame.time.Clock()
@@ -297,6 +331,8 @@ def lev1():
             px += speed
         if keys[K_SPACE]:
             if bullState == 'ready':
+                bullSound = mixer.Sound('pics/laser.wav')
+                bullSound.play()
                 bullx = px
                 fireBullet(bullx, bully)
         player = Rect(px, py, psize, psize)
@@ -321,6 +357,8 @@ def lev1():
             # collision
             collision = collided(enemyX[i], enemyY[i], bullx, bully)
             if collision:
+                boomSound = mixer.Sound('pics/boom.wav')
+                boomSound.play()
                 bully = 595
                 bullState = 'ready'
                 score += 1
@@ -329,6 +367,8 @@ def lev1():
             enemy(enemyX[i], enemyY[i],i)
         px = px + xMove
         py = py + yMove
+        if score == 30:
+            return 'win1'
         screen.blit(font1.render("Score:"+str(score), False, WHITE), (20, 650))
         display.flip()
     fpsClock.tick(60)
@@ -352,12 +392,12 @@ def lev2():
     global score
     global playerVehicle
     global numEnemies
-    bullyChange = 0.7
+    bullyChange = 5
     psize = 40
     xMove = 0
     yMove = 0
     run = True
-    speed = 0.5
+    speed = 3
     player = Rect(px, py, psize, psize)
     image_rect = playerVehicle.get_rect(center=player.center)
     if cooldown < 20:
@@ -376,8 +416,11 @@ def lev2():
         if keys[K_RIGHT]:  # and px + speed: #moving player right
             px += speed
         if keys[K_SPACE]:
-            bullx = px
-            fireBullet(bullx, bully)
+            if bullState == 'ready':
+                bullSound = mixer.Sound('pics/laser.wav')
+                bullSound.play()
+                bullx = px
+                fireBullet(bullx, bully)
         player = Rect(px, py, psize, psize)
         image_rect = playerVehicle.get_rect(center=player.center)
         screen.blit(playerVehicle, image_rect)
@@ -392,20 +435,24 @@ def lev2():
         for i in range(numEnemies):
             enemyX[i] += enemyXchange[i]
             if enemyX[i] <= 0:
-                enemyXchange[i] = 0.3
+                enemyXchange[i] = 2
                 enemyY[i] += enemyYchange[i]
             elif enemyX[i] >= 1100:
-                enemyXchange[i] = -0.3
+                enemyXchange[i] = -2
                 enemyY[i] += enemyYchange[i]
             # collision
             collision = collided(enemyX[i], enemyY[i], bullx, bully)
             if collision:
+                boomSound = mixer.Sound('pics/boom.wav')
+                boomSound.play()
                 bully = 595
                 bullState = 'ready'
                 score += 1
                 enemyX[i] = random.randint(5, 1100)
                 enemyY[i] = random.randint(50, 100)
             enemy(enemyX[i], enemyY[i],i)
+        if score == 100:
+            return 'win2'
         px = px + xMove
         py = py + yMove
         screen.blit(font1.render("Score:"+str(score), False, WHITE), (1000, 685))
@@ -414,6 +461,8 @@ def lev2():
 
 def start():
     run = True
+    global score
+    score = 0
     while run:
         for evt in event.get():
             if evt.type == QUIT:
@@ -477,6 +526,10 @@ while page != "exit":
     if page == 'charselect':
         page = selectShip()
     if page == 'settings':
-        page = settings()
+        page = settingsfn()
+    if page == 'win1':
+        page = win1()
+    if page == 'win2':
+        page = win2()
 
 quit()
