@@ -1,7 +1,6 @@
 from select import select
 from pygame import *
-import pygame
-import sys
+import pygame, sys
 import tkinter
 import random
 import time
@@ -10,6 +9,10 @@ import math
 from tkinter import messagebox as mb
 from tkinter import*
 from pygame import mixer
+from pyvidplayer import Video
+import ctypes
+global screen
+ctypes.windll.user32.ShowWindow( ctypes.windll.kernel32.GetConsoleWindow(), 0 )
 Tk().wm_withdraw()  # to hide the main window
 mixer.init()  # initialize music player
 root = Tk()
@@ -34,7 +37,7 @@ x, y = 0, 0
 OUTLINE = (150, 50, 30)
 gameLogo = image.load("pics/gameLogo1.png")
 bgPic = image.load("pics/bg1.jpg")
-settings = image.load("pics/settings.png")
+settingpic= image.load("pics/settings.png")
 volumePic = image.load("pics/vol.png")
 # RECT LOADING
 startRect = Rect(480, 365, 320, 70)
@@ -58,7 +61,7 @@ font1 = pygame.font.SysFont("tahoma", 20)
 font3 = pygame.font.SysFont("tahoma", 150)
 #BGM
 mixer.music.load('pics/bgm.wav')
-mixer.music.play(-1)
+
 # GAME IMAGE LOADING
 #level pass
 level1pic = image.load('pics/level1.jpg')
@@ -101,14 +104,20 @@ storybg = image.load('pics/storyPic.jpg').convert_alpha()
 levelbg = image.load("pics/bg2.jpg").convert_alpha()
 # Extra Variables (local):
 score = 0
-
+def intro():
+    vid = Video("pics/intro.mp4")
+    vid.set_size((width,height))    
+    while True:
+        screen = pygame.display.set_mode((width,height))
+        vid.draw(screen, (0,0))
+        pygame.display.update()
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                vid.close()
+                return 'menu'
 
 def sound():
     pass
-
-
-# def settings():
-#    pass
 def levels():
     run = True
     screen.blit(levelbg, (0, 0))
@@ -187,7 +196,38 @@ px = 600
 py = 600
 
 def settingsfn():
-    pass
+    bgPic2=image.load("pics/bg2.jpg")
+    fullRect=Rect(300,210,300,300)
+    winRect=Rect(650,210,300,300)
+    fullRect1=Rect(300,210,300,300)
+    winRect2=Rect(650,210,300,300)
+    font4=pygame.font.SysFont("Aharoni",70)
+    running=True
+    global screen
+    while running:
+        for evt in event.get():
+            if evt.type==QUIT:
+                return 'menu'                
+        mx,my=mouse.get_pos()
+        mb=mouse.get_pressed() 
+        screen.blit(bgPic2,(0,0))
+        draw.rect(screen,BLACK,fullRect,0,10)
+        draw.rect(screen,BLACK,winRect,0,10)
+        draw.rect(screen,WHITE,fullRect1,10,10)
+        draw.rect(screen,WHITE,winRect2,10,10)
+        screen.blit(font4.render("Fullscreen",True,WHITE),(325,330))
+        screen.blit(font4.render("Windowed",True,WHITE),(680,330))
+        keys = key.get_pressed()  # check what keys are pressed'
+        screen.blit(font1.render("Click here to return to menu",
+                    False, WHITE), (1000, 685))
+        if mb[0]:
+            if fullRect.collidepoint(mx,my):
+                screen = display.set_mode((width, height),FULLSCREEN)
+            if winRect.collidepoint(mx,my):
+                screen = display.set_mode((width,height))
+            if Rect(1000,685,280,35).collidepoint(mx,my):
+                return 'menu'
+        display.flip()
 def enemy(x, y, i):
     screen.blit(EnemyShip1[i], (x-50, y-20))
 
@@ -268,7 +308,7 @@ def win1():
             if evt.type == QUIT:
                     return 'menu'
             keys = key.get_pressed()  # check what keys are pressed
-            if keys[K_RETURN]:  # and px - speed > 0: #moving player left
+            if keys[K_RETURN]:  #return to next level
                 return 'lev2'
 
         display.flip()
@@ -284,10 +324,16 @@ def win2():
             if evt.type == QUIT:
                     return 'menu'
             keys = key.get_pressed()  # check what keys are pressed
-            if keys[K_RETURN]:  # and px - speed > 0: #moving player left
+            if keys[K_RETURN]:  #return to main menu
                 return 'menu'
 
         display.flip()
+def gameover():
+        screen.blit((image.load('pics/gameover.png')),(0,0))
+        screen.blit(font3.render("Game over", True, WHITE), (500, 50))
+        screen.blit(font1.render("Press enter to return to main menu", True, WHITE), (600, 600))
+        screen.blit(font1.render("Restart your game client to continue playing", True, WHITE), (600, 650))
+
 def lev1():
     # sprite rect assign
     fpsClock = pygame.time.Clock()
@@ -318,6 +364,7 @@ def lev1():
         cooldown += 1
     while run:
         screen.blit(level1bg, (0, 0))
+        screen.blit(font1.render("MISSION: DOWN "+str(30-score)+" AIRCRAFT", False, WHITE), (20, 20))
         keys = key.get_pressed()
         mx, my = mouse.get_pos()
         mb = mouse.get_pressed()
@@ -325,9 +372,9 @@ def lev1():
             if evt.type == QUIT:
                 return 'menu'
         keys = key.get_pressed()  # check what keys are pressed
-        if keys[K_LEFT]:  # and px - speed > 0: #moving player left
+        if keys[K_LEFT]:  ##moving player left
             px -= speed
-        if keys[K_RIGHT]:  # and px + speed: #moving player right
+        if keys[K_RIGHT]:  #moving player right
             px += speed
         if keys[K_SPACE]:
             if bullState == 'ready':
@@ -335,6 +382,8 @@ def lev1():
                 bullSound.play()
                 bullx = px
                 fireBullet(bullx, bully)
+        if keys[K_RETURN]:
+            return 'menu'
         player = Rect(px, py, psize, psize)
         image_rect = playerVehicle.get_rect(center=player.center)
         screen.blit(playerVehicle, image_rect)
@@ -347,6 +396,11 @@ def lev1():
             bully -= bullyChange
         # enemy movement
         for i in range(numEnemies):
+            enemyrect = Rect(enemyX[i],enemyY[i],200,140)
+            #GAME OVER TEXT
+            if enemyrect.colliderect(player):
+                gameover()
+                break
             enemyX[i] += enemyXchange[i]
             if enemyX[i] <= 0:
                 enemyXchange[i] = 1
@@ -404,6 +458,7 @@ def lev2():
         cooldown += 1
     while run:
         screen.blit(levelbg, (0, 0))
+        screen.blit(font1.render("MISSION: SCORE "+str(100-score)+" POINTS", False, WHITE), (20, 20))
         keys = key.get_pressed()
         mx, my = mouse.get_pos()
         mb = mouse.get_pressed()
@@ -421,6 +476,8 @@ def lev2():
                 bullSound.play()
                 bullx = px
                 fireBullet(bullx, bully)
+        if keys[K_RETURN]:
+            return 'menu'
         player = Rect(px, py, psize, psize)
         image_rect = playerVehicle.get_rect(center=player.center)
         screen.blit(playerVehicle, image_rect)
@@ -433,6 +490,10 @@ def lev2():
             bully -= bullyChange
         # enemy movement
         for i in range(numEnemies):
+            enemyrect = Rect(enemyX[i],enemyY[i],200,140)
+            if enemyrect.colliderect(player):
+                gameover()
+                break
             enemyX[i] += enemyXchange[i]
             if enemyX[i] <= 0:
                 enemyXchange[i] = 2
@@ -455,11 +516,12 @@ def lev2():
             return 'win2'
         px = px + xMove
         py = py + yMove
-        screen.blit(font1.render("Score:"+str(score), False, WHITE), (1000, 685))
+        screen.blit(font1.render("Score:"+str(score), False, WHITE), (20, 650))
         display.flip()
     fpsClock.tick(60)
 
 def start():
+    mixer.music.play(-1)
     run = True
     global score
     score = 0
@@ -483,7 +545,7 @@ def start():
         draw.rect(screen, WHITE, musicRect, 0, 10)
         draw.rect(screen, BLACK, borderRect, 10, 0)
         screen.blit(gameLogo, (35, -350))
-        screen.blit(settings,(1200,25))
+        screen.blit(settingpic,(1200,25))
         screen.blit(font.render("Start Game", True, WHITE), (545, 375))
         screen.blit(font.render("Select Spaceship", True, WHITE), (495, 450))
         screen.blit(font.render("Instructions", True, WHITE), (545, 530))
@@ -509,8 +571,10 @@ def start():
     return "exit"
 
 
-page = "menu"
+page = "intro"
 while page != "exit":
+    if page == 'intro':
+        page = intro()
     if page == "menu":
         page = start()
     if page == "levels":
@@ -531,5 +595,7 @@ while page != "exit":
         page = win1()
     if page == 'win2':
         page = win2()
+    if page == 'gameover':
+        page = gameover()
 
 quit()
